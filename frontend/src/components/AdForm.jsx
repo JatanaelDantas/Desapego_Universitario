@@ -1,4 +1,3 @@
-// frontend/src/components/AdForm.jsx
 import { useState } from 'react';
 
 export default function AdForm({ onCancel, onSubmitSuccess }) {

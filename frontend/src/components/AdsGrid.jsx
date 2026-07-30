@@ -1,8 +1,7 @@
-// frontend/src/components/AdsGrid.jsx
 export default function AdsGrid({ ads, filter, setFilter }) {
   const categories = ['Todos', 'Livros', 'Eletrônicos', 'Vestuário'];
 
-  // Declarado apenas UMA vez aqui no topo!
+
   const getCategoryIcon = (category) => {
     if (category === 'Livros') return '/livros.png';
     if (category === 'Eletrônicos') return '/eletronicos.png';
@@ -45,10 +44,22 @@ export default function AdsGrid({ ads, filter, setFilter }) {
               <p className="ad-price">
                 {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
               </p>
+                <p className="ad-price">
+                {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
+              </p>
             </div>
           ))
         )}
       </div>
     </section>
   );
+
+  
+  <button 
+    className="btn-secondary" 
+    style={{ width: '100%', marginTop: '12px', fontSize: '0.85rem' }}
+    onClick={() => alert(`Você demonstrou interesse em: "${ad.title}". Como é um MVP universitário, a negociação ocorre presencialmente no campus!`)}
+  >
+    {ad.type === 'doacao' ? 'Quero receber' : 'Tenho interesse'}
+  </button>
 }

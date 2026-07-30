@@ -1,4 +1,3 @@
-// frontend/src/components/Toast.jsx
 export default function Toast({ message, type }) {
   return (
     <div style={{

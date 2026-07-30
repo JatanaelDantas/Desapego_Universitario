@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { getAds, createAd } from './services/api';

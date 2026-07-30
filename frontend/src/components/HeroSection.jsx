@@ -1,4 +1,3 @@
-// frontend/src/components/HeroSection.jsx
 export default function HeroSection({ adsCount }) {
   return (
     <>
