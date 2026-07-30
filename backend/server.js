@@ -8,11 +8,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Conecta ao banco de dados sem erro no Linux
+
 const db = new Database('./banco.sqlite', { verbose: console.log });
 console.log('Conectado ao banco de dados SQLite (better-sqlite3) com sucesso.');
 
-// Cria a tabela
+db.exec('DROP TABLE IF EXISTS ads;');
+
 db.exec(`
     CREATE TABLE IF NOT EXISTS ads (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,12 +21,12 @@ db.exec(`
         description TEXT,
         category TEXT NOT NULL,
         price REAL,
-        type TEXT NOT NULL CHECK(type IN ('Venda', 'Doacao')),
+        type TEXT NOT NULL CHECK(type IN ('venda', 'doacao')),
         imageUrl TEXT
     )
 `);
 
-// Rota POST: Criar anúncio
+
 app.post('/ads', (req, res) => {
     const { title, description, category, price, type, imageUrl } = req.body;
     
@@ -53,7 +54,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// Rota GET: Listar anúncios
+
 app.get('/ads', (req, res) => {
     const { category } = req.query;
     try {
@@ -71,7 +72,7 @@ app.get('/ads', (req, res) => {
     }
 });
 
-// Rota DELETE: Remover anúncio
+
 app.delete('/ads/:id', (req, res) => {
     const { id } = req.params;
     try {
