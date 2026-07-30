@@ -1,6 +1,5 @@
-export default function AdsGrid({ ads, filter, setFilter }) {
+export default function AdsGrid({ ads, filter, setFilter, showToast }) {
   const categories = ['Todos', 'Livros', 'Eletrônicos', 'Vestuário'];
-
 
   const getCategoryIcon = (category) => {
     if (!category) return '/roupas.png';
@@ -8,8 +7,18 @@ export default function AdsGrid({ ads, filter, setFilter }) {
     
     if (cat.includes('livro')) return '/livros.png';
     if (cat.includes('eletronico')) return '/eletronicos.png';
-    
     return '/roupas.png';
+  };
+
+  const handleInterest = (e, ad) => {
+    e.stopPropagation();
+    const mensagem = `Interesse em "${ad.title}" registrado! Negociação presencial no campus.`;
+  
+    if (showToast) {
+      showToast(mensagem, 'success');
+    } else {
+      alert(mensagem);
+    }
   };
 
   return (
@@ -55,10 +64,7 @@ export default function AdsGrid({ ads, filter, setFilter }) {
                 type="button"
                 className="btn-secondary" 
                 style={{ width: '100%', marginTop: '12px', fontSize: '0.85rem' }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Você demonstrou interesse em: "${ad.title}". A negociação ocorre presencialmente no campus!`);
-                }}
+                onClick={(e) => handleInterest(e, ad)}
               >
                 {ad.type === 'doacao' ? 'Quero receber' : 'Tenho interesse'}
               </button>

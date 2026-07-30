@@ -37,7 +37,7 @@ function App() {
   const handleCreateAd = async (newAdData) => {
     try {
       await createAd(newAdData);
-      showToast('🎉 Anúncio publicado com sucesso!', 'success');
+      showToast('Anúncio publicado com sucesso!', 'success');
       fetchAds(filter);
       setCurrentView('home');
     } catch (error) {
@@ -49,12 +49,11 @@ function App() {
   return (
     <div className="landing-container">
       {toast.show && <Toast message={toast.message} type={toast.type} />}
-
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
-
       {currentView === 'home' ? (
         <>
           <HeroSection adsCount={ads.length} />
+          showToast={showToast}
           <AdsGrid ads={ads} filter={filter} setFilter={setFilter} />
         </>
       ) : (
