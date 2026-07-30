@@ -6,16 +6,25 @@ function App() {
   const [filter, setFilter] = useState('Todos');
   const [currentView, setCurrentView] = useState('home');
 
-  // Estados para o formulário
+  // Sistema de Toast Flutuante (substitui o alert)
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 4000); // Some sozinho após 4 segundos
+  };
+
+  // Estados para o formulário (tudo padronizado em minúsculo pro banco aceitar!)
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
-  const [type, setType] = useState('Venda');
+  const [type, setType] = useState('venda');
   const [price, setPrice] = useState('');
 
-  // 1. BUSCAR ANÚNCIOS DA API JÁ FILTRADOS (GET /ads?category=...)
+  // 1. BUSCAR ANÚNCIOS DA API
   const fetchAds = useCallback(async (categoriaAtual) => {
     try {
-      // Se for "Todos", busca normal: /ads. Se for categoria específica, usa a query param do backend:
       const url = categoriaAtual === 'Todos' 
         ? 'https://desapego-universitario-poy6.onrender.com/ads' 
         : `https://desapego-universitario-poy6.onrender.com/ads?category=${categoriaAtual}`;
@@ -25,10 +34,10 @@ function App() {
       setAds(data);
     } catch (error) {
       console.error('Erro ao buscar anúncios:', error);
+      showToast('Erro ao carregar os anúncios da nuvem.', 'error');
     }
   }, []);
 
-  // Dispara a busca quando a página abre OU quando o usuário clica em outro filtro
   useEffect(() => {
     fetchAds(filter);
   }, [filter, fetchAds]);
@@ -40,7 +49,7 @@ function App() {
     const newAd = {
       title,
       category,
-      type,
+      type, // Agora envia 'venda' ou 'doacao' em minúsculo perfeitamente
       price: type === 'doacao' ? 0 : Number(price),
       description: 'Anúncio universitário',
       imageUrl: ''
@@ -54,25 +63,43 @@ function App() {
       });
 
       if (response.ok) {
-        alert('Anúncio publicado com sucesso!');
+        showToast('🎉 Anúncio publicado com sucesso!', 'success');
         setTitle('');
         setCategory('');
         setPrice('');
-        // Atualiza a lista trazendo a categoria atual e volta pra Home
         fetchAds(filter);
         setCurrentView('home');
       } else {
         const errorData = await response.json();
-        alert(`Erro ao publicar: ${errorData.error || 'Verifique os dados'}`);
+        showToast(`Erro: ${errorData.error || 'Verifique os dados informados'}`, 'error');
       }
     } catch (error) {
       console.error('Erro ao criar anúncio:', error);
-      alert('Erro de conexão com o servidor.');
+      showToast('Erro de conexão com o servidor.', 'error');
     }
   };
 
   return (
     <div className="landing-container">
+      {/* Toast Notificador Flutuante */}
+      {toast.show && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          padding: '16px 24px',
+          backgroundColor: toast.type === 'success' ? '#10B981' : '#EF4444',
+          color: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)',
+          fontWeight: 'bold',
+          zIndex: 9999,
+          transition: 'all 0.3s ease'
+        }}>
+          {toast.message}
+        </div>
+      )}
+
       <nav className="app-nav">
         <h2 onClick={() => setCurrentView('home')} style={{cursor: 'pointer'}}>♻️ VortexApp</h2>
         {currentView === 'home' && (
@@ -108,7 +135,6 @@ function App() {
               ))}
             </div>
 
-            {/* A listagem agora renderiza direto da resposta da API sem filtro manual */}
             <div className="ads-grid">
               {ads.length === 0 ? (
                 <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '20px' }}>
@@ -121,7 +147,7 @@ function App() {
                       {ad.category === 'Livros' ? '📚' : ad.category === 'Eletrônicos' ? '🧮' : '🥼'}
                     </div>
                     <h4>{ad.title}</h4>
-                    <span className="ad-badge">{ad.type}</span>
+                    <span className="ad-badge" style={{ textTransform: 'capitalize' }}>{ad.type}</span>
                     <p className="ad-price">
                       {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
                     </p>
@@ -162,8 +188,8 @@ function App() {
               onChange={(e) => setType(e.target.value)}
               required
             >
-              <option value="venda">venda</option>
-              <option value="doacao">doacao</option>
+              <option value="venda">Venda</option>
+              <option value="doacao">Doação</option>
             </select>
 
             <label>Preço (R$)</label>
