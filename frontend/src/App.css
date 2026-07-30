@@ -344,4 +344,22 @@ body {
     width: 100%;
     padding: 12px;
   }
+
+  .ads-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ad-card {
+    padding: 16px;
+    width: 100%;
+  }
+
+  .ad-card h4 {
+    font-size: 1.1rem;
+  }
+
+  .ad-price {
+    font-size: 1.3rem;
+  }
 }

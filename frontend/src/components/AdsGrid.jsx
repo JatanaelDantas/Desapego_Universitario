@@ -3,9 +3,13 @@ export default function AdsGrid({ ads, filter, setFilter }) {
 
 
   const getCategoryIcon = (category) => {
-    if (category === 'Livros') return '/livros.png';
-    if (category === 'Eletrônicos') return '/eletronicos.png';
-    return '/vestuario.png';
+    if (!category) return '/roupas.png';
+    const cat = category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    
+    if (cat.includes('livro')) return '/livros.png';
+    if (cat.includes('eletronico')) return '/eletronicos.png';
+    
+    return '/roupas.png';
   };
 
   return (
@@ -14,6 +18,7 @@ export default function AdsGrid({ ads, filter, setFilter }) {
         {categories.map(cat => (
           <button
             key={cat}
+            type="button"
             className={filter === cat ? 'active-filter' : 'filter-btn'}
             onClick={() => setFilter(cat)}
           >
@@ -41,25 +46,26 @@ export default function AdsGrid({ ads, filter, setFilter }) {
               <span className="ad-badge">
                 {ad.type === 'doacao' ? 'Doação' : 'Venda'}
               </span>
+              
               <p className="ad-price">
                 {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
               </p>
-                <p className="ad-price">
-                {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
-              </p>
+
+              <button 
+                type="button"
+                className="btn-secondary" 
+                style={{ width: '100%', marginTop: '12px', fontSize: '0.85rem' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  alert(`Você demonstrou interesse em: "${ad.title}". A negociação ocorre presencialmente no campus!`);
+                }}
+              >
+                {ad.type === 'doacao' ? 'Quero receber' : 'Tenho interesse'}
+              </button>
             </div>
           ))
         )}
       </div>
     </section>
   );
-
-  
-  <button 
-    className="btn-secondary" 
-    style={{ width: '100%', marginTop: '12px', fontSize: '0.85rem' }}
-    onClick={() => alert(`Você demonstrou interesse em: "${ad.title}". Como é um MVP universitário, a negociação ocorre presencialmente no campus!`)}
-  >
-    {ad.type === 'doacao' ? 'Quero receber' : 'Tenho interesse'}
-  </button>
 }
