@@ -53,8 +53,7 @@ function App() {
       {currentView === 'home' ? (
         <>
           <HeroSection adsCount={ads.length} />
-          showToast={showToast}
-          <AdsGrid ads={ads} filter={filter} setFilter={setFilter} />
+          <AdsGrid ads={ads} filter={filter} setFilter={setFilter} showToast={showToast}/>
         </>
       ) : (
         <AdForm
