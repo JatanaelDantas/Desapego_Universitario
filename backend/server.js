@@ -46,6 +46,13 @@ app.post('/ads', (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'API do Desapego Universitário rodando com sucesso no Render!' 
+    });
+});
+
 // Rota GET: Listar anúncios
 app.get('/ads', (req, res) => {
     const { category } = req.query;

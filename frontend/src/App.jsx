@@ -17,8 +17,8 @@ function App() {
     try {
       // Se for "Todos", busca normal: /ads. Se for categoria específica, usa a query param do backend:
       const url = categoriaAtual === 'Todos' 
-        ? 'http://localhost:3000/ads' 
-        : `http://localhost:3000/ads?category=${categoriaAtual}`;
+        ? 'https://desapego-universitario-poy6.onrender.com/ads' 
+        : `https://desapego-universitario-poy6.onrender.com/ads?category=${categoriaAtual}`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -47,7 +47,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/ads', {
+      const response = await fetch('https://desapego-universitario-poy6.onrender.com/ads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newAd)
