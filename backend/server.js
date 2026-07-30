@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,27 +8,24 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const db = new sqlite3.Database('./banco.sqlite', (err) => {
-    if (err) console.error('Erro ao conectar ao banco de dados:', err.message);
-    else {
-        console.log('Conectado ao banco de dados SQLite com sucesso.');
-    
-        db.run(`
-            CREATE TABLE IF NOT EXISTS ads (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                description TEXT,
-                category TEXT NOT NULL,
-                price REAL,
-                type TEXT NOT NULL CHECK(type IN ('Venda', 'Doacao')),
-                imageUrl TEXT
-            )
-        `);
-    }
-});
+// Conecta ao banco de dados sem erro no Linux
+const db = new Database('./banco.sqlite', { verbose: console.log });
+console.log('Conectado ao banco de dados SQLite (better-sqlite3) com sucesso.');
 
+// Cria a tabela
+db.exec(`
+    CREATE TABLE IF NOT EXISTS ads (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        category TEXT NOT NULL,
+        price REAL,
+        type TEXT NOT NULL CHECK(type IN ('Venda', 'Doacao')),
+        imageUrl TEXT
+    )
+`);
 
-// As rotas da API
+// Rota POST: Criar anúncio
 app.post('/ads', (req, res) => {
     const { title, description, category, price, type, imageUrl } = req.body;
     
@@ -36,42 +33,52 @@ app.post('/ads', (req, res) => {
         return res.status(400).json({ error: "Campos 'title', 'category' e 'type' são obrigatórios." });
     }
 
-    const query = `INSERT INTO ads (title, description, category, price, type, imageUrl) VALUES (?, ?, ?, ?, ?, ?)`;
-    
-    db.run(query, [title, description, category, price, type, imageUrl], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ id: this.lastID, message: 'Anúncio cadastrado com sucesso!' });
-    });
+    try {
+        const stmt = db.prepare(`
+            INSERT INTO ads (title, description, category, price, type, imageUrl) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `);
+        const info = stmt.run(title, description, category, price, type, imageUrl);
+        
+        res.status(201).json({ id: info.lastInsertRowid, message: 'Anúncio cadastrado com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
+// Rota GET: Listar anúncios
 app.get('/ads', (req, res) => {
     const { category } = req.query;
-    let query = `SELECT * FROM ads`;
-    let params = [];
-
-    if (category) {
-        query += ` WHERE category = ?`;
-        params.push(category);
-    }
-
-    db.all(query, params, (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+    try {
+        let rows;
+        if (category) {
+            const stmt = db.prepare(`SELECT * FROM ads WHERE category = ?`);
+            rows = stmt.all(category);
+        } else {
+            const stmt = db.prepare(`SELECT * FROM ads`);
+            rows = stmt.all();
+        }
         res.json(rows);
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
+// Rota DELETE: Remover anúncio
 app.delete('/ads/:id', (req, res) => {
     const { id } = req.params;
-    db.run(`DELETE FROM ads WHERE id = ?`, id, function(err) {
+    try {
+        const stmt = db.prepare(`DELETE FROM ads WHERE id = ?`);
+        const info = stmt.run(id);
 
-        if (err) return res.status(500).json({ error: err.message });
-        
-        if (this.changes === 0) {
+        if (info.changes === 0) {
             return res.status(404).json({ message: "Anúncio não encontrado." });
         }
         
         res.json({ message: 'Anúncio removido com sucesso!' });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => {
