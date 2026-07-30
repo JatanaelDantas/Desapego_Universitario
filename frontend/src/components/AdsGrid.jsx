@@ -2,10 +2,11 @@
 export default function AdsGrid({ ads, filter, setFilter }) {
   const categories = ['Todos', 'Livros', 'Eletrônicos', 'Vestuário'];
 
+  // Declarado apenas UMA vez aqui no topo!
   const getCategoryIcon = (category) => {
-    if (category === 'Livros') return '📚';
-    if (category === 'Eletrônicos') return '🧮';
-    return '🥼';
+    if (category === 'Livros') return '/livros.png';
+    if (category === 'Eletrônicos') return '/eletronicos.png';
+    return '/vestuario.png';
   };
 
   return (
@@ -30,9 +31,15 @@ export default function AdsGrid({ ads, filter, setFilter }) {
         ) : (
           ads.map(ad => (
             <div key={ad.id} className="ad-card">
-              <div className="ad-image">{getCategoryIcon(ad.category)}</div>
+              <div className="ad-image">
+                <img
+                  src={getCategoryIcon(ad.category)}
+                  alt={ad.category}
+                  style={{ width: '56px', height: '56px', objectFit: 'contain' }}
+                />
+              </div>
               <h4>{ad.title}</h4>
-              <span className="ad-badge" style={{ textTransform: 'capitalize' }}>
+              <span className="ad-badge">
                 {ad.type === 'doacao' ? 'Doação' : 'Venda'}
               </span>
               <p className="ad-price">
@@ -44,33 +51,4 @@ export default function AdsGrid({ ads, filter, setFilter }) {
       </div>
     </section>
   );
-  // Função que aponta direto para a pasta public
-  const getCategoryIcon = (category) => {
-    if (category === 'Livros') return '/livros.png';
-    if (category === 'Eletrônicos') return '/eletronicos.png';
-    return '/vestuario.png';
-  };
-
-  // Dentro do ads.map(ad => ...):
-  <div key={ad.id} className="ad-card">
-    <div className="ad-image">
-      {/* A tag img chama a imagem da pasta public com tamanho padronizado */}
-      <img 
-        src={getCategoryIcon(ad.category)} 
-        alt={ad.category} 
-        style={{ width: '56px', height: '56px', objectFit: 'contain' }} 
-      />
-    </div>
-
-    <h4>{ad.title}</h4>
-
-    {/* Já resolvemos o acento aqui com operador ternário */}
-    <span className="ad-badge">
-      {ad.type === 'doacao' ? 'Doação' : 'Venda'}
-    </span>
-
-    <p className="ad-price">
-      {ad.type === 'doacao' ? 'Grátis' : `R$ ${Number(ad.price).toFixed(2)}`}
-    </p>
-  </div>
 }
