@@ -7,7 +7,7 @@ O Desapego Universitário é uma plataforma Full Stack focada na economia circul
 ## Demonstração em Produção
 
 O projeto está 100% implantado e funcional na nuvem:
-* **Frontend (Aplicação Web):** [desapego-universitario.vercel.app]
+* **Frontend (Aplicação Web):** [https://desapego-universitario.vercel.app/]
 * **Backend (API REST):** [https://desapego-universitario-poy6.onrender.com]
 
 ---
