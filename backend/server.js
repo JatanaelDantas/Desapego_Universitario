@@ -11,7 +11,8 @@ app.use(express.json());
 
 const db = new Database('./banco.sqlite', { verbose: console.log });
 console.log('Conectado ao banco de dados SQLite (better-sqlite3) com sucesso.');
-
+// Usei DROP TABLE pelo fato de ser apenas para ambiente de demonstração.
+// Logo ele reinicia os dados a cada deploy para evitar anúncios indevidos em um projeto público.
 db.exec('DROP TABLE IF EXISTS ads;');
 
 db.exec(`
